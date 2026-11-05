@@ -1,15 +1,16 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-// ⚠️ ВСТАВЬ СЮДА СВОИ ДАННЫЕ ИЗ FIREBASE CONSOLE ⚠️
+// 🔑 ТВОИ КЛЮЧИ УЖЕ ВСТАВЛЕНЫ СЮДА
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+  apiKey: "AIzaSyCPpV_CRb4D_BZzSAF2ZBe2lCBm93mepvE",
+  authDomain: "forkop-2543b.firebaseapp.com",
+  projectId: "forkop-2543b",
+  storageBucket: "forkop-2543b.firebasestorage.app",
+  messagingSenderId: "55712430637",
+  appId: "1:55712430637:web:1349654831623ba4b0d6a4",
+  measurementId: "G-TPNS7Z767V"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -67,12 +68,12 @@ window.uploadFandom = async function() {
         formBtn.disabled = true;
         formBtn.innerText = "UPLOADING...";
 
-        // 1. Upload Image
+        // 1. Upload Image to Storage
         const storageRef = ref(storage, 'fandoms/' + Date.now() + '_' + file.name);
         await uploadBytes(storageRef, file);
         const imgUrl = await getDownloadURL(storageRef);
 
-        // 2. Save to Firestore
+        // 2. Save Metadata to Firestore
         await addDoc(collection(db, "fandoms"), {
             name: name,
             category: cat,
@@ -102,24 +103,26 @@ window.uploadFandom = async function() {
 
 // --- LOAD FANDOMS (REAL-TIME) ---
 const grid = document.getElementById('fandomGrid');
-const q = query(collection(db, "fandoms"), orderBy("date", "desc"));
+if (grid) {
+    const q = query(collection(db, "fandoms"), orderBy("date", "desc"));
 
-onSnapshot(q, (snapshot) => {
-    grid.innerHTML = '';
-    snapshot.forEach(doc => {
-        const d = doc.data();
-        const card = document.createElement('div');
-        card.className = 'fandom-card';
-        card.innerHTML = `
-            <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" onerror="this.src='https://via.placeholder.com/300x160?text=No+Image'">
-            <span style="font-size:0.7rem; background:var(--primary); color:black; padding:2px 6px; border-radius:3px;">${d.category}</span>
-            <h3 style="margin:8px 0;">${d.name}</h3>
-            <p style="opacity:0.8; font-size:0.9rem;">${d.description}</p>
-            <small style="opacity:0.5; display:block; margin-top:10px;">By: ${d.author}</small>
-        `;
-        grid.appendChild(card);
+    onSnapshot(q, (snapshot) => {
+        grid.innerHTML = '';
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            const card = document.createElement('div');
+            card.className = 'fandom-card';
+            card.innerHTML = `
+                <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" onerror="this.src='https://via.placeholder.com/300x160?text=No+Image'">
+                <span style="font-size:0.7rem; background:var(--primary); color:black; padding:2px 6px; border-radius:3px;">${d.category}</span>
+                <h3 style="margin:8px 0;">${d.name}</h3>
+                <p style="opacity:0.8; font-size:0.9rem;">${d.description}</p>
+                <small style="opacity:0.5; display:block; margin-top:10px;">By: ${d.author}</small>
+            `;
+            grid.appendChild(card);
+        });
     });
-});
+}
 
 // --- GOD MODE SECRET ---
 let clicks = 0;
