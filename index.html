@@ -30,9 +30,11 @@
             <option value="YouTube">YouTube</option>
         </select>
         <textarea id="fDesc" placeholder="Description..."></textarea>
-        <!-- Поле для ссылки на картинку вместо загрузки файла -->
+        <!-- Поле для ссылки на картинку -->
         <input type="text" id="fImgUrl" placeholder="Image URL (optional, paste link here)">
-        <button onclick="uploadFandom()" style="width:100%; margin-top:15px;">SUBMIT TO DATABASE</button>
+        
+        <!-- ИСПРАВЛЕННАЯ КНОПКА С ID -->
+        <button id="submitBtn" style="width:100%; margin-top:15px;">SUBMIT TO DATABASE</button>
     </div>
 
     <main class="grid" id="fandomGrid">
@@ -43,6 +45,7 @@
         Status: ONLINE | Dev: KISUNE | Site: ForKop
     </footer>
 
+    <!-- Подключаем исправленный скрипт как модуль -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
