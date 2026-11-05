@@ -1,33 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>ForKop // Fandom Database</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForKop // Fandom Database</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <a href="#">HOME</a>
-    <a href="#">ALL FANDOMS</a>
-    <a href="#">MARVEL</a>
-    <a href="#">ADMIN</a>
-  </nav>
-  <header>
-    <h1>ForKop // Fandom Database</h1>
-    <p>Your ultimate fan archive</p>
-    <button id="addBtn">Add New Fandom</button>
-  </header>
-  <main>
-    <form id="uploadForm" class="hidden">
-      <input id="name" placeholder="Name" required>
-      <input id="cat" placeholder="Category" required>
-      <textarea id="desc" placeholder="Description" required></textarea>
-      <input type="file" id="img" accept="image/*" required>
-      <button type="submit">Submit</button>
-    </form>
-    <div id="fandomGrid"></div>
-  </main>
-  <footer id="footer">Status: ONLINE | Dev: KISUNE | Site: ForKop</footer>
-  <script type="module" src="script.js"></script>
+
+    <header>
+        <h1>ForKop // FANDOM DATABASE</h1>
+        <p>Your ultimate fan archive</p>
+    </header>
+
+    <nav>
+        <a href="#" class="active">HOME</a>
+        <a href="#">ALL FANDOMS</a>
+        <a href="#">MARVEL</a>
+        <button id="toggleFormBtn" class="nav-btn">➕ ADD NEW FANDOM</button>
+    </nav>
+
+    <!-- Форма добавления (скрыта по умолчанию) -->
+    <div id="addFormContainer" class="add-form" style="display: none;">
+        <h3>Create New Entry</h3>
+        <input type="text" id="fName" placeholder="Fandom Name (e.g. Naruto)">
+        <select id="fCat">
+            <option value="Anime">Anime</option>
+            <option value="Games">Games</option>
+            <option value="Marvel">Marvel</option>
+            <option value="Movies">Movies</option>
+            <option value="YouTube">YouTube</option>
+        </select>
+        <textarea id="fDesc" placeholder="Description..."></textarea>
+        <label for="fImg" style="display:block; margin-top:10px; cursor:pointer; border:1px dashed var(--primary); padding:10px; text-align:center;">📸 Click to Upload Image</label>
+        <input type="file" id="fImg" accept="image/*" style="display:none;">
+        <div id="imgPreview" style="margin-top:10px; max-height:100px;"></div>
+        <button onclick="uploadFandom()" style="width:100%; margin-top:15px;">SUBMIT TO DATABASE</button>
+    </div>
+
+    <main class="grid" id="fandomGrid">
+        <!-- Карточки появятся здесь -->
+    </main>
+
+    <footer id="secretFooter">
+        Status: ONLINE | Dev: KISUNE | Site: ForKop
+    </footer>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
