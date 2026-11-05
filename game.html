@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForKop // Iron Man Lab</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>STARK INDUSTRIES // ASSEMBLY LAB</h1>
+        <p>Collect all 20 components to activate the Mark LXXXV suit.</p>
+    </header>
+
+    <nav>
+        <a href="index.html">HOME</a>
+        <a href="game.html" class="active">GAME</a>
+    </nav>
+
+    <main class="game-container">
+        <div class="progress-bar">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+        <h3 id="statusText">Components Collected: 0 / 20</h3>
+        
+        <div id="partsGrid" class="parts-grid">
+            <!-- Детали генерируются JS -->
+        </div>
+
+        <button id="assembleBtn" class="game-btn" style="display:none; margin-top:30px; font-size:1.2rem;">ACTIVATE SUIT</button>
+    </main>
+
+    <footer id="secretFooter">Status: ONLINE | Dev: KISUNE</footer>
+
+    <script type="module">
+        // Список из 20 гаджетов
+        const gadgets = [
+            "Arc Reactor", "Repulsors", "Unibeam", "Missiles", "Lasers",
+            "JARVIS Core", "Nanotech Housing", "Thrusters", "HUD Visor", "Life Support",
+            "Gold-Titanium Alloy", "Flight Stabilizers", "Energy Shields", "Sonic Cannons", "EMP Blasters",
+            "Thermal Regulators", "AI Matrix", "Propulsion System", "Armor Plating", "Mark L Key"
+        ];
+
+        let collected = new Set();
+        const grid = document.getElementById('partsGrid');
+        const progressFill = document.getElementById('progressFill');
+        const statusText = document.getElementById('statusText');
+        const assembleBtn = document.getElementById('assembleBtn');
+
+        // Генерация кнопок
+        gadgets.forEach((gadget, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'part-item';
+            btn.innerText = gadget;
+            btn.onclick = () => collectPart(btn, gadget);
+            grid.appendChild(btn);
+        });
+
+        function collectPart(element, name) {
+            if (!collected.has(name)) {
+                collected.add(name);
+                element.classList.add('collected');
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const percent = (collected.size / gadgets.length) * 100;
+            progressFill.style.width = percent + '%';
+            statusText.innerText = `Components Collected: ${collected.size} / ${gadgets.length}`;
+            
+            if (collected.size === gadgets.length) {
+                assembleBtn.style.display = 'block';
+                statusText.innerText = "SYSTEM READY. AWAITING ACTIVATION.";
+            }
+        }
+
+        assembleBtn.onclick = () => {
+            alert("🚀 MARK LXXXV ACTIVATED! WELCOME BACK, BOSS.");
+            document.body.classList.add('god-mode'); // Пасхалка при победе
+        };
+
+        // God Mode Footer
+        let clicks = 0;
+        document.getElementById('secretFooter').addEventListener('click', () => {
+            clicks++;
+            if (clicks === 5) document.body.classList.add('god-mode');
+        });
+    </script>
+</body>
+</html>
