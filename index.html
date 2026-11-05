@@ -15,12 +15,10 @@
 
     <nav>
         <a href="#" class="active">HOME</a>
-        <a href="#">ALL FANDOMS</a>
-        <a href="#">MARVEL</a>
         <button id="toggleFormBtn" class="nav-btn">➕ ADD NEW FANDOM</button>
     </nav>
 
-    <!-- Форма добавления (скрыта по умолчанию) -->
+    <!-- Форма добавления -->
     <div id="addFormContainer" class="add-form" style="display: none;">
         <h3>Create New Entry</h3>
         <input type="text" id="fName" placeholder="Fandom Name (e.g. Naruto)">
@@ -32,9 +30,8 @@
             <option value="YouTube">YouTube</option>
         </select>
         <textarea id="fDesc" placeholder="Description..."></textarea>
-        <label for="fImg" style="display:block; margin-top:10px; cursor:pointer; border:1px dashed var(--primary); padding:10px; text-align:center;">📸 Click to Upload Image</label>
-        <input type="file" id="fImg" accept="image/*" style="display:none;">
-        <div id="imgPreview" style="margin-top:10px; max-height:100px;"></div>
+        <!-- Поле для ссылки на картинку вместо загрузки файла -->
+        <input type="text" id="fImgUrl" placeholder="Image URL (optional, paste link here)">
         <button onclick="uploadFandom()" style="width:100%; margin-top:15px;">SUBMIT TO DATABASE</button>
     </div>
 
