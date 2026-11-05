@@ -17,7 +17,7 @@ body {
     transition: all 0.5s ease;
 }
 
-/* GOD MODE (Оставляем розовым для контраста) */
+/* GOD MODE (Розовый неон для контраста) */
 body.god-mode {
     --primary: #ff00de;
     --bg: #1a001a;
@@ -29,7 +29,7 @@ header { text-align: center; margin-bottom: 30px; }
 h1 { text-shadow: var(--glow); letter-spacing: 3px; font-size: 2.5rem; }
 
 nav {
-    display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap;
+    display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; align-items: center;
 }
 
 nav a, button.nav-btn {
@@ -51,10 +51,14 @@ input, select, textarea {
     color: var(--primary); padding: 10px; margin-top: 5px; font-family: inherit;
 }
 
-button[onclick], button#submitBtn, button.game-btn {
+button#submitBtn, button.game-btn {
     background: var(--primary); color: var(--bg); border: none; padding: 10px; 
     font-weight: bold; cursor: pointer; margin-top: 10px; font-family: inherit;
-    width: 100%;
+    width: 100%; transition: 0.3s;
+}
+
+button#submitBtn:hover, button.game-btn:hover {
+    box-shadow: var(--glow); transform: scale(1.02);
 }
 
 .grid {
@@ -75,26 +79,24 @@ button[onclick], button#submitBtn, button.game-btn {
     margin-bottom: 10px; background: #000; border: 1px dashed var(--primary);
 }
 
-/* СТИЛИ ДЛЯ МИНИ-ИРЫ IRON MAN */
-.game-container {
-    max-width: 800px; margin: 0 auto; border: 2px solid var(--primary); padding: 20px;
-    background: rgba(0,0,0,0.8);
+/* СТИЛИ ДЛЯ КНОПКИ ИГРЫ В КАРТОЧКЕ */
+.game-link-btn {
+    display: block;
+    margin-top: 15px;
+    text-align: center;
+    border: 1px solid var(--primary);
+    padding: 8px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s;
+    background: rgba(0,0,0,0.3);
 }
-.parts-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 20px;
-}
-.part-item {
-    border: 1px solid var(--primary); padding: 10px; text-align: center; cursor: pointer;
-    opacity: 0.5; transition: 0.3s;
-}
-.part-item.collected {
-    opacity: 1; background: var(--primary); color: var(--bg); box-shadow: var(--glow);
-}
-.progress-bar {
-    width: 100%; height: 20px; border: 1px solid var(--primary); margin: 20px 0;
-}
-.progress-fill {
-    height: 100%; background: var(--primary); width: 0%; transition: width 0.5s;
+
+.game-link-btn:hover {
+    background: var(--primary);
+    color: var(--bg);
+    box-shadow: var(--glow);
 }
 
 footer {
