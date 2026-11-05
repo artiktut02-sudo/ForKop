@@ -1,6 +1,3 @@
-// Скопируй этот код, открой консоль на сайте (F12) и вставь его туда.
-// Он добавит 200 фэндомов в твою базу данных!
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
@@ -16,26 +13,34 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const categories = ["Anime", "Games", "Marvel", "Movies", "YouTube"];
-const prefixes = ["Super", "Mega", "Dark", "Cyber", "Neo", "Ultra", "Retro", "Space"];
-const nouns = ["Ninja", "Warrior", "Racer", "Mage", "Pilot", "Hero", "Villain", "Explorer"];
+// Генератор имен для 200+ фэндомов
+const animes = ["Naruto", "One Piece", "Bleach", "AOT", "JJK", "Demon Slayer", "DBZ", "Hunter x Hunter"];
+const games = ["Minecraft", "Roblox", "GTA", "Fortnite", "Valorant", "CS2", "Dota 2", "League of Legends"];
+const marvels = ["Iron Man", "Spider-Man", "Thor", "Hulk", "Captain America", "Black Widow", "Doctor Strange"];
+const movies = ["Matrix", "Star Wars", "Lord of Rings", "Avatar", "Inception", "Interstellar"];
 
-async function seedDatabase() {
-    console.log("🚀 Starting seeding...");
-    for (let i = 0; i < 200; i++) {
-        const cat = categories[Math.floor(Math.random() * categories.length)];
-        const name = `${prefixes[Math.floor(Math.random() * prefixes.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]} #${i+1}`;
+async function seedMassiveDatabase() {
+    console.log("🚀 Seeding 200+ Fandoms...");
+    
+    for(let i=0; i<210; i++) {
+        let cat, name;
+        const rand = Math.random();
         
+        if(rand < 0.3) { cat="Anime"; name=animes[i%animes.length] + " " + (i+1); }
+        else if(rand < 0.6) { cat="Games"; name=games[i%games.length] + " " + (i+1); }
+        else if(rand < 0.8) { cat="Marvel"; name=marvels[i%marvels.length] + " " + (i+1); }
+        else { cat="Movies"; name=movies[i%movies.length] + " " + (i+1); }
+
         await addDoc(collection(db, "fandoms"), {
             name: name,
             category: cat,
-            description: `This is an auto-generated entry for testing ForKop v1.0. Category: ${cat}.`,
-            imgUrl: "https://placehold.co/300x160/050505/4af626?text=FANDOM",
+            description: `Official mini-game for ${name}. Can you beat the high score?`,
+            imgUrl: `https://placehold.co/300x160/050505/4af626?text=${cat.toUpperCase()}`,
             author: "System",
             date: new Date()
         });
     }
-    console.log("✅ 200 Fandoms added successfully!");
+    console.log("✅ DONE! 210 Fandoms with Games added.");
 }
 
-seedDatabase();
+seedMassiveDatabase();
