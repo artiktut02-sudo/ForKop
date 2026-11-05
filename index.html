@@ -14,7 +14,9 @@
     </header>
 
     <nav>
-        <a href="#" class="active">HOME</a>
+        <a href="index.html" class="active">HOME</a>
+        <!-- Ссылка на новую мини-игру -->
+        <a href="game.html">🎮 IRON MAN LAB</a> 
         <button id="toggleFormBtn" class="nav-btn">➕ ADD NEW FANDOM</button>
     </nav>
 
@@ -30,22 +32,21 @@
             <option value="YouTube">YouTube</option>
         </select>
         <textarea id="fDesc" placeholder="Description..."></textarea>
-        <!-- Поле для ссылки на картинку -->
-        <input type="text" id="fImgUrl" placeholder="Image URL (optional, paste link here)">
+        <input type="text" id="fImgUrl" placeholder="Image URL (optional)">
         
-        <!-- ИСПРАВЛЕННАЯ КНОПКА С ID -->
+        <!-- Кнопка с правильным ID для скрипта -->
         <button id="submitBtn" style="width:100%; margin-top:15px;">SUBMIT TO DATABASE</button>
     </div>
 
     <main class="grid" id="fandomGrid">
-        <!-- Карточки появятся здесь -->
+        <!-- Карточки появятся здесь автоматически -->
     </main>
 
     <footer id="secretFooter">
         Status: ONLINE | Dev: KISUNE | Site: ForKop
     </footer>
 
-    <!-- Подключаем исправленный скрипт как модуль -->
+    <!-- Подключаем скрипт как модуль -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
