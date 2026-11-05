@@ -18,70 +18,83 @@ const db = getFirestore(app);
 // --- UI LOGIC ---
 const formBtn = document.getElementById('toggleFormBtn');
 const formContainer = document.getElementById('addFormContainer');
+const submitBtn = document.getElementById('submitBtn'); // Новая кнопка отправки
 
-formBtn.addEventListener('click', () => {
-    const isHidden = formContainer.style.display === 'none';
-    formContainer.style.display = isHidden ? 'block' : 'none';
-    formBtn.innerText = isHidden ? '❌ CANCEL' : '➕ ADD NEW FANDOM';
-});
+// Переключение формы
+if (formBtn && formContainer) {
+    formBtn.addEventListener('click', () => {
+        const isHidden = formContainer.style.display === 'none';
+        formContainer.style.display = isHidden ? 'block' : 'none';
+        formBtn.innerText = isHidden ? '❌ CANCEL' : '➕ ADD NEW FANDOM';
+    });
+}
 
 // --- MODERATION ---
 const badWords = ['badword', 'spam', 'nsfw', 'плохое'];
 function isClean(text) {
+    if (!text) return true;
     const lower = text.toLowerCase();
     return !badWords.some(word => lower.includes(word));
 }
 
-// --- SAVE FUNCTION (TEXT ONLY) ---
-window.uploadFandom = async function() {
-    const name = document.getElementById('fName').value;
-    const cat = document.getElementById('fCat').value;
-    const desc = document.getElementById('fDesc').value;
-    // Если ссылка пустая, ставим заглушку
-    const imgUrl = document.getElementById('fImgUrl').value || 'https://via.placeholder.com/300x160?text=No+Image';
-
-    if (!name || !desc) {
-        alert("⚠️ Please fill Name and Description!");
-        return;
-    }
-
-    if (!isClean(name) || !isClean(desc)) {
-        alert("⛔ Prohibited words detected! Submission blocked.");
-        return;
-    }
-
-    try {
-        formBtn.disabled = true;
-        formBtn.innerText = "SAVING...";
-
-        // Сохраняем ТОЛЬКО в Firestore (без Storage)
-        await addDoc(collection(db, "fandoms"), {
-            name: name,
-            category: cat,
-            description: desc,
-            imgUrl: imgUrl,
-            author: "Guest",
-            date: new Date()
-        });
-
-        alert("✅ Successfully added to ForKop Database!");
+// --- SAVE FUNCTION (Теперь через EventListener) ---
+if (submitBtn) {
+    submitBtn.addEventListener('click', async () => {
+        console.log("🚀 Кнопка нажата, запускаем сохранение...");
         
-        // Очистка формы
-        document.getElementById('fName').value = '';
-        document.getElementById('fDesc').value = '';
-        document.getElementById('fImgUrl').value = '';
-        formContainer.style.display = 'none';
-        formBtn.innerText = '➕ ADD NEW FANDOM';
+        const nameInput = document.getElementById('fName');
+        const catInput = document.getElementById('fCat');
+        const descInput = document.getElementById('fDesc');
+        const imgInput = document.getElementById('fImgUrl');
 
-    } catch (error) {
-        console.error(error);
-        alert("❌ Error: " + error.message);
-    } finally {
-        formBtn.disabled = false;
-    }
-};
+        const name = nameInput ? nameInput.value.trim() : '';
+        const cat = catInput ? catInput.value : 'Anime';
+        const desc = descInput ? descInput.value.trim() : '';
+        const imgUrl = (imgInput && imgInput.value.trim()) ? imgInput.value.trim() : 'https://via.placeholder.com/300x160?text=No+Image';
 
-// --- LOAD FANDOMS (REAL-TIME) ---
+        if (!name || !desc) {
+            alert("⚠️ Please fill Name and Description!");
+            return;
+        }
+
+        if (!isClean(name) || !isClean(desc)) {
+            alert("⛔ Prohibited words detected!");
+            return;
+        }
+
+        try {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "SAVING...";
+
+            await addDoc(collection(db, "fandoms"), {
+                name: name,
+                category: cat,
+                description: desc,
+                imgUrl: imgUrl,
+                author: "Guest",
+                date: new Date()
+            });
+
+            alert("✅ Successfully added to ForKop Database!");
+            
+            // Очистка
+            if (nameInput) nameInput.value = '';
+            if (descInput) descInput.value = '';
+            if (imgInput) imgInput.value = '';
+            if (formContainer) formContainer.style.display = 'none';
+            if (formBtn) formBtn.innerText = '➕ ADD NEW FANDOM';
+
+        } catch (error) {
+            console.error("❌ Ошибка Firebase:", error);
+            alert("❌ Error: " + error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "SUBMIT TO DATABASE";
+        }
+    });
+}
+
+// --- LOAD FANDOMS ---
 const grid = document.getElementById('fandomGrid');
 if (grid) {
     const q = query(collection(db, "fandoms"), orderBy("date", "desc"));
@@ -101,15 +114,20 @@ if (grid) {
             `;
             grid.appendChild(card);
         });
+    }, (error) => {
+        console.error("Ошибка загрузки:", error);
     });
 }
 
-// --- GOD MODE SECRET ---
+// --- GOD MODE ---
 let clicks = 0;
-document.getElementById('secretFooter').addEventListener('click', () => {
-    clicks++;
-    if (clicks === 5) {
-        document.body.classList.add('god-mode');
-        alert("⚠️ GOD MODE ACTIVATED ⚠️");
-    }
-});
+const footer = document.getElementById('secretFooter');
+if (footer) {
+    footer.addEventListener('click', () => {
+        clicks++;
+        if (clicks === 5) {
+            document.body.classList.add('god-mode');
+            alert("⚠️ GOD MODE ACTIVATED ⚠️");
+        }
+    });
+}
