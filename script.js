@@ -1,8 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-// 🔑 ТВОИ КЛЮЧИ УЖЕ ВСТАВЛЕНЫ СЮДА
+// 🔑 ТВОИ КЛЮЧИ
 const firebaseConfig = {
   apiKey: "AIzaSyCPpV_CRb4D_BZzSAF2ZBe2lCBm93mepvE",
   authDomain: "forkop-2543b.firebaseapp.com",
@@ -15,29 +14,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // --- UI LOGIC ---
 const formBtn = document.getElementById('toggleFormBtn');
 const formContainer = document.getElementById('addFormContainer');
-const imgInput = document.getElementById('fImg');
-const imgPreview = document.getElementById('imgPreview');
 
 formBtn.addEventListener('click', () => {
     const isHidden = formContainer.style.display === 'none';
     formContainer.style.display = isHidden ? 'block' : 'none';
     formBtn.innerText = isHidden ? '❌ CANCEL' : '➕ ADD NEW FANDOM';
-});
-
-imgInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            imgPreview.innerHTML = `<img src="${ev.target.result}" style="max-height:100px; border:1px solid var(--primary);">`;
-        };
-        reader.readAsDataURL(file);
-    }
 });
 
 // --- MODERATION ---
@@ -47,15 +32,16 @@ function isClean(text) {
     return !badWords.some(word => lower.includes(word));
 }
 
-// --- UPLOAD FUNCTION ---
+// --- SAVE FUNCTION (TEXT ONLY) ---
 window.uploadFandom = async function() {
     const name = document.getElementById('fName').value;
     const cat = document.getElementById('fCat').value;
     const desc = document.getElementById('fDesc').value;
-    const file = imgInput.files[0];
+    // Если ссылка пустая, ставим заглушку
+    const imgUrl = document.getElementById('fImgUrl').value || 'https://via.placeholder.com/300x160?text=No+Image';
 
-    if (!name || !desc || !file) {
-        alert("⚠️ Please fill all fields and upload an image!");
+    if (!name || !desc) {
+        alert("⚠️ Please fill Name and Description!");
         return;
     }
 
@@ -66,14 +52,9 @@ window.uploadFandom = async function() {
 
     try {
         formBtn.disabled = true;
-        formBtn.innerText = "UPLOADING...";
+        formBtn.innerText = "SAVING...";
 
-        // 1. Upload Image to Storage
-        const storageRef = ref(storage, 'fandoms/' + Date.now() + '_' + file.name);
-        await uploadBytes(storageRef, file);
-        const imgUrl = await getDownloadURL(storageRef);
-
-        // 2. Save Metadata to Firestore
+        // Сохраняем ТОЛЬКО в Firestore (без Storage)
         await addDoc(collection(db, "fandoms"), {
             name: name,
             category: cat,
@@ -85,17 +66,16 @@ window.uploadFandom = async function() {
 
         alert("✅ Successfully added to ForKop Database!");
         
-        // Reset Form
+        // Очистка формы
         document.getElementById('fName').value = '';
         document.getElementById('fDesc').value = '';
-        imgInput.value = '';
-        imgPreview.innerHTML = '';
+        document.getElementById('fImgUrl').value = '';
         formContainer.style.display = 'none';
         formBtn.innerText = '➕ ADD NEW FANDOM';
 
     } catch (error) {
         console.error(error);
-        alert("❌ Error uploading. Check console for details.");
+        alert("❌ Error: " + error.message);
     } finally {
         formBtn.disabled = false;
     }
@@ -105,7 +85,7 @@ window.uploadFandom = async function() {
 const grid = document.getElementById('fandomGrid');
 if (grid) {
     const q = query(collection(db, "fandoms"), orderBy("date", "desc"));
-
+    
     onSnapshot(q, (snapshot) => {
         grid.innerHTML = '';
         snapshot.forEach(doc => {
@@ -113,7 +93,7 @@ if (grid) {
             const card = document.createElement('div');
             card.className = 'fandom-card';
             card.innerHTML = `
-                <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" onerror="this.src='https://via.placeholder.com/300x160?text=No+Image'">
+                <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" onerror="this.src='https://via.placeholder.com/300x160?text=Error'">
                 <span style="font-size:0.7rem; background:var(--primary); color:black; padding:2px 6px; border-radius:3px;">${d.category}</span>
                 <h3 style="margin:8px 0;">${d.name}</h3>
                 <p style="opacity:0.8; font-size:0.9rem;">${d.description}</p>
