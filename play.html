@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForKop // Mini-Game Arena</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #gameCanvas { 
+            background: #000; border: 2px solid var(--primary); 
+            display: block; margin: 20px auto; max-width: 100%; 
+            box-shadow: var(--glow); cursor: crosshair;
+        }
+        .game-ui { text-align: center; margin-bottom: 20px; }
+        .score-board { font-size: 1.5rem; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 id="gameTitle">LOADING GAME...</h1>
+        <p id="gameDesc">Initializing engine...</p>
+    </header>
+
+    <nav>
+        <a href="index.html">⬅ BACK TO DATABASE</a>
+        <button id="startBtn" class="nav-btn">START GAME</button>
+    </nav>
+
+    <main class="game-ui">
+        <div class="score-board">Score: <span id="scoreVal">0</span></div>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <p style="margin-top:10px; opacity:0.7;">Use Mouse or Arrow Keys to Play</p>
+    </main>
+
+    <footer id="secretFooter">Status: ONLINE | Dev: KISUNE</footer>
+
+    <script type="module">
+        // Получаем данные фэндома из URL
+        const params = new URLSearchParams(window.location.search);
+        const fandomName = params.get('name') || 'Unknown';
+        const category = params.get('cat') || 'General';
+
+        document.getElementById('gameTitle').innerText = `${fandomName} // MINI-GAME`;
+        document.getElementById('gameDesc').innerText = `Category: ${category} | Objective: Survive & Score!`;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameLoop;
+        let score = 0;
+        let isPlaying = false;
+
+        // УНИВЕРСАЛЬНАЯ ЛОГИКА ИГРЫ (Адаптируется под категорию)
+        function startGame() {
+            if (isPlaying) return;
+            isPlaying = true;
+            score = 0;
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('startBtn').innerText = "RESTART";
+            
+            // Очистка
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Запуск цикла
+            gameLoop = setInterval(updateGame, 1000/60);
+        }
+
+        function updateGame() {
+            // Простая механика: уклоняйся от падающих блоков
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Игрок (зеленый квадрат)
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary');
+            ctx.fillRect(playerX, playerY, 30, 30);
+
+            // Враги (красные квадраты)
+            enemies.forEach(e => {
+                e.y += e.speed;
+                ctx.fillStyle = '#ff0040';
+                ctx.fillRect(e.x, e.y, 20, 20);
+                
+                // Столкновение
+                if (Math.abs(e.x - playerX) < 30 && Math.abs(e.y - playerY) < 30) {
+                    gameOver();
+                }
+            });
+
+            // Спавн врагов
+            if (Math.random() < 0.05) {
+                enemies.push({x: Math.random() * (canvas.width-20), y: -20, speed: 2 + Math.random()*3});
+            }
+
+            // Очки
+            score++;
+            if(score % 10 === 0) document.getElementById('scoreVal').innerText = Math.floor(score/10);
+        }
+
+        function gameOver() {
+            clearInterval(gameLoop);
+            isPlaying = false;
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Courier New';
+            ctx.fillText("GAME OVER", 200, 200);
+            ctx.font = '16px Courier New';
+            ctx.fillText(`Final Score: ${Math.floor(score/10)}`, 220, 230);
+        }
+
+        // Управление
+        let playerX = 285, playerY = 350;
+        let enemies = [];
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            playerX = e.clientX - rect.left - 15;
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            enemies = [];
+            startGame();
+        });
+
+        // God Mode Footer
+        let clicks = 0;
+        document.getElementById('secretFooter').addEventListener('click', () => {
+            clicks++;
+            if (clicks === 5) document.body.classList.add('god-mode');
+        });
+    </script>
+</body>
+</html>
