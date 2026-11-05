@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-// 🔑 ТВОИ КЛЮЧИ
+// 🔑 ТВОИ КЛЮЧИ FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCPpV_CRb4D_BZzSAF2ZBe2lCBm93mepvE",
   authDomain: "forkop-2543b.firebaseapp.com",
@@ -18,7 +18,7 @@ const db = getFirestore(app);
 // --- UI LOGIC ---
 const formBtn = document.getElementById('toggleFormBtn');
 const formContainer = document.getElementById('addFormContainer');
-const submitBtn = document.getElementById('submitBtn'); // Новая кнопка отправки
+const submitBtn = document.getElementById('submitBtn');
 
 // Переключение формы
 if (formBtn && formContainer) {
@@ -37,10 +37,10 @@ function isClean(text) {
     return !badWords.some(word => lower.includes(word));
 }
 
-// --- SAVE FUNCTION (Теперь через EventListener) ---
+// --- SAVE FUNCTION ---
 if (submitBtn) {
     submitBtn.addEventListener('click', async () => {
-        console.log("🚀 Кнопка нажата, запускаем сохранение...");
+        console.log("🚀 Сохранение...");
         
         const nameInput = document.getElementById('fName');
         const catInput = document.getElementById('fCat');
@@ -50,7 +50,7 @@ if (submitBtn) {
         const name = nameInput ? nameInput.value.trim() : '';
         const cat = catInput ? catInput.value : 'Anime';
         const desc = descInput ? descInput.value.trim() : '';
-        const imgUrl = (imgInput && imgInput.value.trim()) ? imgInput.value.trim() : 'https://via.placeholder.com/300x160?text=No+Image';
+        const imgUrl = (imgInput && imgInput.value.trim()) ? imgInput.value.trim() : 'https://placehold.co/300x160/050505/4af626?text=NO+IMAGE';
 
         if (!name || !desc) {
             alert("⚠️ Please fill Name and Description!");
@@ -85,7 +85,7 @@ if (submitBtn) {
             if (formBtn) formBtn.innerText = '➕ ADD NEW FANDOM';
 
         } catch (error) {
-            console.error("❌ Ошибка Firebase:", error);
+            console.error("❌ Firebase Error:", error);
             alert("❌ Error: " + error.message);
         } finally {
             submitBtn.disabled = false;
@@ -94,7 +94,7 @@ if (submitBtn) {
     });
 }
 
-// --- LOAD FANDOMS ---
+// --- LOAD FANDOMS & GENERATE GAME LINKS ---
 const grid = document.getElementById('fandomGrid');
 if (grid) {
     const q = query(collection(db, "fandoms"), orderBy("date", "desc"));
@@ -105,21 +105,30 @@ if (grid) {
             const d = doc.data();
             const card = document.createElement('div');
             card.className = 'fandom-card';
+            
+            // Генерация ссылки на мини-игру с параметрами
+            const gameLink = `play.html?name=${encodeURIComponent(d.name)}&cat=${encodeURIComponent(d.category)}`;
+
             card.innerHTML = `
-                <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" onerror="this.src='https://via.placeholder.com/300x160?text=Error'">
+                <img src="${d.imgUrl}" class="fandom-img" alt="${d.name}" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/300x160/050505/4af626?text=NO+IMAGE';">
                 <span style="font-size:0.7rem; background:var(--primary); color:black; padding:2px 6px; border-radius:3px;">${d.category}</span>
                 <h3 style="margin:8px 0;">${d.name}</h3>
                 <p style="opacity:0.8; font-size:0.9rem;">${d.description}</p>
                 <small style="opacity:0.5; display:block; margin-top:10px;">By: ${d.author}</small>
+                
+                <!-- КНОПКА ИГРЫ -->
+                <a href="${gameLink}" class="game-link-btn">🎮 PLAY MINI-GAME</a>
             `;
             grid.appendChild(card);
         });
     }, (error) => {
         console.error("Ошибка загрузки:", error);
+        grid.innerHTML = `<p style="color:red; text-align:center;">Error loading data. Check Console.</p>`;
     });
 }
 
-// --- GOD MODE ---
+// --- GOD MODE SECRET ---
 let clicks = 0;
 const footer = document.getElementById('secretFooter');
 if (footer) {
